@@ -1,3 +1,3 @@
-projects.yml
-dist/
 vendor/
+dist/
+config.yml

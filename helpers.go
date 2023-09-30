@@ -9,29 +9,34 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func parseProjectsYAML() ([]Project, error) {
-	yamlFile, err := os.ReadFile("projects.yml")
-	if err != nil {
-		return nil, err
-	}
-
-	var projects []Project
-	err = yaml.Unmarshal(yamlFile, &projects)
-	if err != nil {
-		return nil, err
-	}
-
-	return projects, nil
+type Command struct {
+	Label   string `yaml:"label"`
+	Command string `yaml:"command"`
 }
 
-func openProject(command string) {
+func parseConfigYAML(configFilePath string) ([]Command, error) {
+	yamlFile, err := os.ReadFile(configFilePath)
+	if err != nil {
+		return nil, err
+	}
+
+	var config []Command
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
+}
+
+func runCommand(command string) {
 	split_command := strings.Split(command, " ")
 	cmd := exec.Command(split_command[0], split_command[1:]...)
 	err := cmd.Run()
 	if err != nil {
-		println("Failed to open project:", err)
+		println("Failed to run command:", err)
 	} else {
-		println("Project opened successfully")
+		println("Command ran successfully")
 	}
 }
 

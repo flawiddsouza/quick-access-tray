@@ -8,11 +8,6 @@ import (
 	"github.com/getlantern/systray"
 )
 
-type Project struct {
-	Label   string `yaml:"label"`
-	Command string `yaml:"command"`
-}
-
 func main() {
 	systray.Run(onReady, onExit)
 }
@@ -20,22 +15,22 @@ func main() {
 var restart = false
 
 func onReady() {
-	projects, err := parseProjectsYAML()
+	config, err := parseConfigYAML("config.yml")
 	if err != nil {
-		println("Failed to parse projects.yml:", err)
+		println("Failed to parse config.yml:", err)
 		return
 	}
 
-	for _, project := range projects {
-		menuItem := systray.AddMenuItem(project.Label, project.Label)
+	for _, command := range config {
+		menuItem := systray.AddMenuItem(command.Label, command.Label)
 		go func(command string) {
 			for {
 				select {
 				case <-menuItem.ClickedCh:
-					openProject(command)
+					runCommand(command)
 				}
 			}
-		}(project.Command)
+		}(command.Command)
 	}
 
 	systray.AddSeparator()

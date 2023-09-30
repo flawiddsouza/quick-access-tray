@@ -1,0 +1,9 @@
+-
+  label: Restfox (Open VSCode)
+  command: code --remote wsl+Ubuntu /home/user/repos/Journals
+-
+  label: Quick Note (Open VSCode)
+  command: code --remote wsl+Ubuntu /home/user/repos/quick-note
+-
+  label: shortcommand (Open VSCode)
+  command: code --remote wsl+Ubuntu /home/user/repos/shortcommand

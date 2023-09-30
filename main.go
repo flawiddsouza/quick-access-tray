@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -81,6 +82,14 @@ func createMenu() {
 		<-mQuit.ClickedCh
 		systray.Quit()
 	}()
+}
+
+//go:embed icon.ico
+var iconFile embed.FS
+
+func getIcon(iconName string) []byte {
+	data, _ := iconFile.ReadFile(iconName)
+	return data
 }
 
 func onReady() {

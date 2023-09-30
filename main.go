@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/getlantern/systray"
 )
@@ -15,10 +16,46 @@ func main() {
 var restart = false
 
 func onReady() {
-	config, err := parseConfigYAML("config.yml")
-	if err != nil {
-		println("Failed to parse config.yml:", err)
-		return
+	var config []Command
+
+	args := os.Args[1:]
+	err := error(nil)
+
+	if len(args) > 0 {
+		if args[0] == "--config" {
+			if len(args) > 1 {
+				config, err = parseConfigYAML(args[1])
+				if err != nil {
+					println("Failed to parse config.yml:", err)
+					systray.Quit()
+				}
+			} else {
+				println("No config file specified.")
+				systray.Quit()
+			}
+		}
+
+		file_path, err := filepath.Abs(args[1])
+		if err != nil {
+			fmt.Println("Failed to get absolute path:", err)
+			systray.Quit()
+		}
+
+		fmt.Printf("Loaded config from %s\n", file_path)
+	} else {
+		file_path, err := filepath.Abs("config.yml")
+		if err != nil {
+			fmt.Println("Failed to get absolute path:", err)
+			systray.Quit()
+		}
+
+		config, err = parseConfigYAML(file_path)
+		if err != nil {
+			println("Failed to parse config.yml:", err)
+			systray.Quit()
+		}
+
+		fmt.Printf("Loaded config from %s\n", file_path)
 	}
 
 	for _, command := range config {

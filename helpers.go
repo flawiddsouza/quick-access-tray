@@ -30,6 +30,7 @@ func parseConfigYAML(configFilePath string) ([]Command, error) {
 }
 
 func runCommand(command string) {
+	println("Running command:", command)
 	split_command := strings.Split(command, " ")
 	cmd := exec.Command(split_command[0], split_command[1:]...)
 	err := cmd.Run()

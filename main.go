@@ -3,19 +3,16 @@ package main
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 
-	"github.com/getlantern/systray"
+	"fyne.io/systray"
 )
 
 func main() {
 	systray.Run(onReady, onExit)
 }
 
-var restart = false
-
-func onReady() {
+func createMenu() {
 	var config []Command
 
 	args := os.Args[1:]
@@ -72,11 +69,11 @@ func onReady() {
 
 	systray.AddSeparator()
 
-	mRestart := systray.AddMenuItem("Restart", "Restart the app")
+	mReload := systray.AddMenuItem("Reload", "Reload the config file")
 	go func() {
-		<-mRestart.ClickedCh
-		restart = true
-		systray.Quit()
+		<-mReload.ClickedCh
+		systray.ResetMenu()
+		createMenu()
 	}()
 
 	mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
@@ -84,28 +81,16 @@ func onReady() {
 		<-mQuit.ClickedCh
 		systray.Quit()
 	}()
+}
 
+func onReady() {
 	systray.SetIcon(getIcon("icon.ico"))
+	systray.SetTitle("Quick Access")
 	systray.SetTooltip("Quick Access")
+
+	createMenu()
 }
 
 func onExit() {
 	println("Exiting...")
-
-	if restart {
-		executablePath, err := os.Executable()
-		if err != nil {
-			fmt.Println("Failed to get executable path:", err)
-			return
-		}
-
-		cmd := exec.Command(executablePath)
-		err = cmd.Start()
-		if err != nil {
-			fmt.Println("Failed to restart executable:", err)
-			return
-		}
-
-		fmt.Println("Restarted the executable.")
-	}
 }

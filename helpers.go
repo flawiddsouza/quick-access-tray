@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
+	"log"
 	"os"
 	"os/exec"
+	"runtime"
 	"strings"
+	"syscall"
 
 	"gopkg.in/yaml.v3"
 )
@@ -37,5 +41,25 @@ func runCommand(command string) {
 		println("Failed to run command:", err)
 	} else {
 		println("Command ran successfully")
+	}
+}
+
+func openFile(filename string) {
+	var cmd *exec.Cmd
+
+	switch runtime.GOOS {
+	case "darwin":
+		cmd = exec.Command("open", filename)
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", filename)
+		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} // so that a cmd window doesn't pop up
+	default:
+		fmt.Println("Unsupported operating system")
+		return
+	}
+
+	err := cmd.Start()
+	if err != nil {
+		log.Fatal(err)
 	}
 }

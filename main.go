@@ -13,6 +13,8 @@ func main() {
 	systray.Run(onReady, onExit)
 }
 
+var configFilePath string
+
 func createMenu() {
 	var config []Command
 
@@ -39,6 +41,7 @@ func createMenu() {
 			systray.Quit()
 		}
 
+		configFilePath = file_path
 		fmt.Printf("Loaded config from %s\n", file_path)
 	} else {
 		file_path, err := filepath.Abs("config.yml")
@@ -53,6 +56,7 @@ func createMenu() {
 			systray.Quit()
 		}
 
+		configFilePath = file_path
 		fmt.Printf("Loaded config from %s\n", file_path)
 	}
 
@@ -69,6 +73,14 @@ func createMenu() {
 	}
 
 	systray.AddSeparator()
+
+	mOpenConfig := systray.AddMenuItem("Open Config", "Open the config file")
+	go func() {
+		for {
+			<-mOpenConfig.ClickedCh
+			openFile(configFilePath)
+		}
+	}()
 
 	mReload := systray.AddMenuItem("Reload", "Reload the config file")
 	go func() {

@@ -7,3 +7,9 @@
 -
   label: shortcommand (Open VSCode)
   command: code --remote wsl+Ubuntu /home/user/repos/shortcommand
+-
+  label: Useful Folder
+  open: D:\Path to \Useful Folder
+-
+  label: Useful File
+  open: D:\Path to \Useful File.txt

@@ -62,14 +62,18 @@ func createMenu() {
 
 	for _, command := range config {
 		menuItem := systray.AddMenuItem(command.Label, command.Label)
-		go func(command string) {
+		go func(command Command) {
 			for {
 				select {
 				case <-menuItem.ClickedCh:
-					runCommand(command)
+					if command.Open != "" {
+						openFile(command.Open)
+					} else {
+						runCommand(command.Command)
+					}
 				}
 			}
-		}(command.Command)
+		}(command)
 	}
 
 	systray.AddSeparator()

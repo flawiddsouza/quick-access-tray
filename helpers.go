@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"syscall"
 
 	"gopkg.in/yaml.v3"
 )
@@ -14,6 +13,7 @@ import (
 type Command struct {
 	Label   string `yaml:"label"`
 	Command string `yaml:"command"`
+	Open    string `yaml:"open"`
 }
 
 func parseConfigYAML(configFilePath string) ([]Command, error) {
@@ -70,14 +70,17 @@ func runCommand(command string) {
 }
 
 func openFile(filename string) {
+	println("Opening:", filename)
+
 	var cmd *exec.Cmd
 
 	switch runtime.GOOS {
 	case "darwin":
 		cmd = exec.Command("open", filename)
 	case "windows":
-		cmd = exec.Command("cmd", "/c", "start", filename)
-		cmd.SysProcAttr = &syscall.SysProcAttr{HideWindow: true} // so that a cmd window doesn't pop up
+		cmd = exec.Command("rundll32.exe", "url.dll,FileProtocolHandler", filename)
+	case "linux":
+		cmd = exec.Command("xdg-open", filename)
 	default:
 		fmt.Println("Unsupported operating system")
 		return

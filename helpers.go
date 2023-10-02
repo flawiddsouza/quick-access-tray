@@ -6,7 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"syscall"
 
 	"gopkg.in/yaml.v3"
@@ -32,9 +31,35 @@ func parseConfigYAML(configFilePath string) ([]Command, error) {
 	return config, nil
 }
 
+func splitString(s string) []string {
+	stringToReturn := []string{}
+	inQuotes := false
+	currentString := ""
+
+	for i := 0; i < len(s); i++ {
+		if s[i] == '"' {
+			inQuotes = !inQuotes
+			currentString += string(s[i])
+		} else if s[i] == ' ' && !inQuotes {
+			if currentString != "" {
+				stringToReturn = append(stringToReturn, currentString)
+				currentString = ""
+			}
+		} else {
+			currentString += string(s[i])
+		}
+	}
+
+	if currentString != "" {
+		stringToReturn = append(stringToReturn, currentString)
+	}
+
+	return stringToReturn
+}
+
 func runCommand(command string) {
 	println("Running command:", command)
-	split_command := strings.Split(command, " ")
+	split_command := splitString(command)
 	cmd := exec.Command(split_command[0], split_command[1:]...)
 	err := cmd.Run()
 	if err != nil {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"fyne.io/systray"
 )
@@ -100,7 +101,7 @@ func createMenu() {
 	}()
 }
 
-//go:embed icon.ico
+//go:embed icon.ico icon.png
 var iconFile embed.FS
 
 func getIcon(iconName string) []byte {
@@ -109,7 +110,11 @@ func getIcon(iconName string) []byte {
 }
 
 func onReady() {
-	systray.SetIcon(getIcon("icon.ico"))
+	if runtime.GOOS == "windows" {
+		systray.SetIcon(getIcon("icon.ico"))
+	} else {
+		systray.SetIcon(getIcon("icon.png"))
+	}
 	systray.SetTitle("Quick Access")
 	systray.SetTooltip("Quick Access")
 

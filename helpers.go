@@ -14,6 +14,7 @@ type Command struct {
 	Label   string `yaml:"label"`
 	Command string `yaml:"command"`
 	Open    string `yaml:"open"`
+	Group   string `yaml:"group"`
 }
 
 func parseConfigYAML(configFilePath string) ([]Command, error) {

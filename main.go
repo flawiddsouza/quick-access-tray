@@ -61,8 +61,19 @@ func createMenu() {
 		fmt.Printf("Loaded config from %s\n", file_path)
 	}
 
+	groups := make(map[string]*systray.MenuItem)
 	for _, command := range config {
-		menuItem := systray.AddMenuItem(command.Label, command.Label)
+		var menuItem *systray.MenuItem
+		if command.Group != "" {
+			if group, ok := groups[command.Group]; ok {
+				menuItem = group.AddSubMenuItem(command.Label, command.Label)
+			} else {
+				groups[command.Group] = systray.AddMenuItem(command.Group, command.Group)
+				menuItem = groups[command.Group].AddSubMenuItem(command.Label, command.Label)
+			}
+		} else {
+			menuItem = systray.AddMenuItem(command.Label, command.Label)
+		}
 		go func(command Command) {
 			for {
 				select {
